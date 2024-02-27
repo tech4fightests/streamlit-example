@@ -5,7 +5,7 @@ import streamlit as st
 import base64
 from time import sleep
 
-def autoplay_audio(self, file_path: str):
+def autoplay_audio(file_path: str):
     with open(file_path, "rb") as f:
         data = f.read()
         b64 = base64.b64encode(data).decode()
