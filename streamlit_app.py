@@ -2,39 +2,65 @@ import altair as alt
 import numpy as np
 import pandas as pd
 import streamlit as st
+import base64
+from time import sleep
 
-"""
-# Welcome to Streamlit!
+def autoplay_audio(self, file_path: str):
+    with open(file_path, "rb") as f:
+        data = f.read()
+        b64 = base64.b64encode(data).decode()
+        md = f"""
+            <audio autoplay controls style="display:none;">
+            <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+            </audio>
+            """
+        element = st.markdown(md, unsafe_allow_html=True)
+        return element
+        
+st.set_page_config(page_title="Countdown Timer", layout="wide")
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+stage_data = {
+        "100":6,
+        "84":10,
+        "77.1":14,
+        "73.3":18,
+        "70.9":22,
+        "69.2":26,
+        "68":30,
+        "67.1":34,
+        "66.3":38,
+        "65.7":42,
+        "65.2":46,
+        "64.8":50,
+        "64.4":54,
+        "64.1":58,
+        "63.9":62
+        }
+total_kicks = 0
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+init_page_countdown = st.empty()
+_, center_col, _ = init_page_countdown.columns([1,2,1])
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+center_col.subheader("Kick Evaluation platform")
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+holder = center_col.empty()
+start_button = holder.button('Start')
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+if start_button:
+    holder.empty()
+    _, col2, _ = st.columns([1,2,1])
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
+    with col2:  
+        ph = st.empty()
+        N = 5
+        for secs in range(N, 0, -1):
+            mm, ss = divmod(secs, 60)  
+            ph.metric("Countdown", f"{mm:02d}:{ss:02d}")
+            sleep(1)  
 
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+        ph.empty() 
+
+        autoplay_audio("go.mp3")
+
+
+
